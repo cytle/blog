@@ -5,10 +5,10 @@
 # Site
 title: x-xsp
 subtitle:
-description:
+description: 苟利国家生死以 岂因祸福避趋之
 author: xsp
-language:
-timezone:
+language: zh-Hans
+timezone: PRC
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
@@ -63,9 +63,20 @@ pagination_dir: page
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type:
+
+# NexT
+avatar: https://avatars1.githubusercontent.com/u/5120505?v=3&s=466
+
+# 多说热评文章 true 或者 false
+duoshuo_hotartical: true
+duoshuo_shortname: x-xsp
+
+search:
+  path: search.xml
+  field: post
