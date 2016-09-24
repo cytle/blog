@@ -6,6 +6,9 @@ tags: Hessian
 
 翻译: Edison peng
 
+(word版下载)[http://qq.com]
+
+
 ## 1.概述
 `Hessian`是一个轻量级的,自定义描述的二进制RPC协议。`Hessian`主要用作面向对象的消息通信。
 
@@ -758,3 +761,8 @@ map和list的值类型字符串被存储在type map中。解析器必须在初�
 |xd0 - xd7            |三字节压缩格式的整型int(-x40000 to x3ffff)
 |xd8 - xef            |单字节压缩格式的长整型long(-x8 to x10, xe0 is 0)
 |xf0 - xff            |双字节压缩格式的长整型long (-x800 to x3ff, xf8 is 0)
+
+
+
+## 附录
+
