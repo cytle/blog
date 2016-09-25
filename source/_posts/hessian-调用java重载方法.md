@@ -102,7 +102,7 @@ public interface TestService {
 如果我们在客户端中调用时
 
 ```php
-// php
+<?php
 
 getUser(1);
 
@@ -116,7 +116,7 @@ getUser($user);
 在使用这样参数数量相同的重载方法时，按照java端的获取规则，我们可以这么调用
 
 ```php
-// php
+<?php
 
 getUser_int(1);
 

@@ -6,7 +6,7 @@ tags: Hessian
 
 翻译: Edison peng
 
-(word版下载)[http://qq.com]
+[word版下载](/uploads/hessian协议中文版.docx)
 
 
 ## 1.概述
