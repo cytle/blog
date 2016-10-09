@@ -6,6 +6,8 @@ tags:
 
 
 [Emoji Unicode Tables](http://apps.timwhitlock.info/emoji/tables/unicode)
+
+[PHP实现Unicode和Utf-8编码的互相转换](https://segmentfault.com/a/1190000003020776)
 ```php
 <?php
 
@@ -146,3 +148,83 @@ foreach ($sHex as $key => $value) {
 |🕝|f09f959d|eda0bdedb59d|261270600032256
 |🕡|f09f95a1|eda0bdedb5a1|261270600032256
 |🕥|f09f95a5|eda0bdedb5a5|261270600032256
+
+
+```java
+// 写入流
+// unicode 转为 utf-8
+
+  /**
+   * Prints a string to the stream, encoded as UTF-8
+   *
+   * @param v the string to print.
+   */
+  public void printString(String v, int strOffset, int length)
+    throws IOException
+  {
+    int offset = _offset;
+    byte []buffer = _buffer;
+
+    for (int i = 0; i < length; i++) {
+      if (SIZE <= offset + 16) {
+        _offset = offset;
+        flushBuffer();
+        offset = _offset;
+      }
+
+      char ch = v.charAt(i + strOffset);
+
+      if (ch < 0x80)
+        buffer[offset++] = (byte) (ch);
+      else if (ch < 0x800) {
+        buffer[offset++] = (byte) (0xc0 + ((ch >> 6) & 0x1f));
+        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+      }
+      else {
+        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
+        buffer[offset++] = (byte) (0x80 + ((ch >> 6) & 0x3f));
+        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+      }
+    }
+
+    _offset = offset;
+  }
+```
+
+
+```java
+  /**
+   * Parses a single UTF8 character.
+   */
+  private int parseUTF8Char()
+    throws IOException
+  {
+    int ch = _offset < _length ? (_buffer[_offset++] & 0xff) : read();
+
+    if (ch < 0x80)
+      return ch;
+    else if ((ch & 0xe0) == 0xc0) {
+      int ch1 = read();
+      int v = ((ch & 0x1f) << 6) + (ch1 & 0x3f);
+
+      return v;
+    }
+    else if ((ch & 0xf0) == 0xe0) {
+      int ch1 = read();
+      int ch2 = read();
+      int v = ((ch & 0x0f) << 12) + ((ch1 & 0x3f) << 6) + (ch2 & 0x3f);
+
+      return v;
+    }
+    else
+      throw error("bad utf-8 encoding at " + codeName(ch));
+  }
+```
+
+
+1. 假设一个表情为两个`char`（unicode）, write 转为 2个3字节字符（utf-8）
+2. 读取
+    2.1 java: parse再将此转回两个`char`（unicode），在完美端传输。
+    2.2 php: 将字符作为utf-8来对待。不能和java沟通
+
+
