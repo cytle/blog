@@ -4,15 +4,15 @@ date: 2016-09-24 14:29:26
 tags: Hessian UTF-8-MB4 unicode UTF-16
 ---
 
-> 这段时间使用Hessian传递数据，发现有很多大坑。年久失修的Hessian的PHP实现库在64位下传递数字错误
-> 连连。之前还发现了传递emoji表情出现了问题，这几天终于追踪到问题所在。
+> 这段时间使用Hessian传递数据，发现有很多大坑。年久失修的Hessian的PHP实现库在64位下传递数字错误连连。
+> 之前还发现了传递emoji表情出现了问题，这几天终于追踪到问题所在。
 
 
 ## 现象说明
 
 使用PHP作为client调用Java开发的Server，返回的字符串中含有不能被json编码的字符，表现为实际的字符
-串为「你好🌍，abc！」，经过HessianJava和HessianPHP后，结果输出为「你好������，abc！」，除了
-这个「🌍」emoji表情外其它的字符都能正确输出。比较奇怪的是Java到Java没有问题。
+串为「你好🌍，abc！」，经过HessianJava和HessianPHP后，结果输出为「你好������，abc！」，
+除了这个「🌍」emoji表情外其它的字符都能正确输出。比较奇怪的是Java到Java没有问题。
 
 我先在数据库中写了一堆emoji表情，然后在hessian2parse解析字符串的地方拦截其收到内容，打印它们的字节
 
@@ -76,11 +76,13 @@ Hessian协议在传递数据时用的字符编码是UTF-8，可变长度，有�
 
 
 再看Java部分前，有一个背景需要知道，从1.5版开始，Java储存字符使用`UTF-16`的方式，
-每个char长度为2Bytes。可以参考[wiki:UTF-16](https://zh.wikipedia.org/wiki/UTF-16)，了解其编码方式。
+每个char长度为2Bytes。可以参考[wiki:UTF-16](https://zh.wikipedia.org/wiki/UTF-16)，
+了解其编码方式。
 
 
 > 在Unicode的零号平面(BMP)中，**UTF-16数值等价于对应的码位**。
-> Unicode中除了BMP外，还有16个辅助平面，码位为U+10000到U+10FFFF。在UTF-16中被编码为一对16比特长的码元（即32bit,4Bytes）。
+> Unicode中除了BMP外，还有16个辅助平面，码位为U+10000到U+10FFFF。
+> 在UTF-16中被编码为一对16比特长的码元（即32bit,4Bytes）。
 
 简而言之，就是像ASCII字符、中文字符等这些在零号平面中的字符在Java中由一个char（2Bytes）表示，
 而emoji这样在辅助平面上的字符由2个char（4Bytes）表示，理论上能实现所有的Unicode字符编码了。
@@ -125,8 +127,7 @@ Hessian协议在传递数据时用的字符编码是UTF-8，可变长度，有�
   }
 ```
 
-这部分代码的目的是将字符串从Java下的字符串（UTF-32）转为UTF-8编码，但明显它只能满足在BMP上码位的
-转码，不能支持辅助平面。
+这部分代码的目的是将字符串从Java下的字符串（UTF-32）转为UTF-8编码，但明显它只能满足在BMP上码位的转码，不能支持辅助平面。
 
 再来看看读的部分
 ```java
