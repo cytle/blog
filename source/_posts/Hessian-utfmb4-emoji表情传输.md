@@ -5,9 +5,6 @@ tags:
 ---
 
 
-[Emoji Unicode Tables](http://apps.timwhitlock.info/emoji/tables/unicode)
-
-[PHP实现Unicode和Utf-8编码的互相转换](https://segmentfault.com/a/1190000003020776)
 ```php
 <?php
 
@@ -228,3 +225,9 @@ foreach ($sHex as $key => $value) {
     2.2 php: 将字符作为utf-8来对待。不能和java沟通
 
 
+## 参考
+[unicode、utf-16、utf-8相互转换](https://cytle.github.io/2016/10/12/unicode%E3%80%81utf-16%E3%80%81utf-8%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/)
+
+[Emoji Unicode Tables](http://apps.timwhitlock.info/emoji/tables/unicode)
+
+[PHP实现Unicode和Utf-8编码的互相转换](https://segmentfault.com/a/1190000003020776)

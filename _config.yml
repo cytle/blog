@@ -80,3 +80,8 @@ duoshuo_shortname: x-xsp
 search:
   path: search.xml
   field: post
+
+# 解决table标签产生br
+marked:
+    gfm: true
+    breaks: false

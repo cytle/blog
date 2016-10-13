@@ -23,13 +23,13 @@ Unicode是为了解决传统的字符编码方案的局限而产生的。类似�
 Unicode.org定义了百万个以上的字符，如果将所有的字符用大小表示，需要的是4个字节。“a“的Unicode表示就会变成0x00000061，而“一“的Unicode值是0x00004E00。实际上，这就是UTF32，Linux操作系统上所使用的Unicode方案。而Windows平台下默认的Unicode编码方式为Little Endian的UTF-16。
 
 
-![字符-编码-编码方案关系.jpg](../uploads/unicode、utf-16、utf-8相互转换/字符-编码-编码方案关系.jpg)
+![字符-编码-编码方案关系.jpg](/uploads/unicode、utf-16、utf-8相互转换/字符-编码-编码方案关系.jpg)
 
 ### utf-32编码规则
 
 UTF-32用四个字节表示代码点，这样就可以完全表示UCS-4的所有代码点，而无需像UTF-16那样使用复杂的算法。与UTF-16类似，UTF-32也包括UTF-32、UTF-32BE、UTF-32LE三种编码，UTF-32也同样需要BOM字符。仅用'ABC'举例：
 
-![utf-32编码规则-ABC例子.png](../uploads/unicode、utf-16、utf-8相互转换/utf-32编码规则-ABC例子.png)
+![utf-32编码规则-ABC例子.png](/uploads/unicode、utf-16、utf-8相互转换/utf-32编码规则-ABC例子.png)
 
 但是，仔细分析可以发现，其实绝大部分字符只使用2个字节就可以表示了。英文的Unicode范围是0x0000-0x007F，中文的Unicode范围是0x4E00-0x9F**，真正需要扩展到4个字节来表示的字符少之又少，所以有些系统直接使用2个字节来表示Unicode。比如Windows系统上，Unicode就是两个字节的。对于那些需要4个字节才能表示的字符，使用一种代理的手法来扩展(其实就是在低两个字节上做一个标记，表示这是一个代理，需要连接上随后的两个字节，才能组成一个字符)。这样的好处是大量的节约了存取空间，也提高了处理的速度。这种Unicode表示方法就是UTF16。一般在Windows平台上，提到Unicode,那就是指UTF16了。
 
@@ -45,15 +45,13 @@ UTF-16BE和UTF-16LE不难理解，而UTF-16就需要通过在文件开头以名�
 
 举个例子。“ABC”这三个字符用各种方式编码后的结果如下：
 
-![utf-16编码规则-ABC例子.png](../uploads/unicode、utf-16、utf-8相互转换/utf-16编码规则-ABC例子.png)
+![utf-16编码规则-ABC例子.png](/uploads/unicode、utf-16、utf-8相互转换/utf-16编码规则-ABC例子.png)
 
 Windows平台下默认的Unicode编码为Little Endian的UTF-16（即上述的 FF FE 41 00 42 00 43 00）。你可以打开记事本，写上ABC，然后保存，再用二进制编辑器看看它的编码结果。
 
 ### utf-8编码规则
 
-
 UTF-16和UTF-32的一个缺点就是它们固定使用两个或四个字节，这样在表示纯ASCII文件时会有很多00字节，造成浪费。而RFC3629定义的 UTF-8则解决了这个问题。UTF-8用1～4个字节来表示代码点。表示方式如下：
-
 <table style="font-size: 0.75em;">
     <tbody>
         <tr>
