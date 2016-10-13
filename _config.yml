@@ -85,3 +85,10 @@ search:
 marked:
     gfm: true
     breaks: false
+
+# 部署
+deploy:
+  type: git
+  repo: git@github.com:cytle/cytle.github.io.git
+  branch: master
+
