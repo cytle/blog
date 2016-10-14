@@ -1,7 +1,7 @@
 ---
-title: unicode、utf-16、utf-8相互转换
+title: Unicode、UTF-16、UTF-8相互转换
 date: 2016-10-12 17:32:33
-tags: unicode utf-8 utf-16 字符
+tags: Unicode UTF-8 UTF-16 字符
 ---
 
 > 本文从wiki和其它博文中搬了一些定义
@@ -141,7 +141,7 @@ UTF-16和UTF-32的一个缺点就是它们固定使用两个或四个字节，�
 
 [wiki:Unicode](https://zh.wikipedia.org/wiki/Unicode)
 
-[wiki:UTF-8](https://zh.wikipedia.org/wiki/UTF-8)
+[wiki:UTF-8]a
 
 [wiki:UTF-16](https://zh.wikipedia.org/wiki/UTF-16)
 

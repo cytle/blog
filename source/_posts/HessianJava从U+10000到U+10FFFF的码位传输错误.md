@@ -1,6 +1,6 @@
 ---
 title: HessianJava从U+10000到U+10FFFF的码位传输错误
-date: 2016-09-24 14:29:26
+date: 2016-10-13 14:29:26
 tags: Hessian UTF-8-MB4 unicode UTF-16
 ---
 
@@ -127,7 +127,7 @@ Hessian协议在传递数据时用的字符编码是UTF-8，可变长度，有�
   }
 ```
 
-这部分代码的目的是将字符串从Java下的字符串（UTF-32）转为UTF-8编码，但明显它只能满足在BMP上码位的转码，不能支持辅助平面。
+这部分代码的目的是将字符串从Java下的字符串（UTF-16）转为UTF-8编码，但明显它只能满足在BMP上码位的转码，不能支持辅助平面。
 
 再来看看读的部分
 ```java
@@ -164,6 +164,103 @@ Hessian是按UTF-8编码传输，在这个方法中应该是将UTF-8转为UTF-16
 UTF-8字符。读取部分，也是这么分别读，最后获取到的char没有问题，弄拙成巧，Java-Java部分就正常传输了。
 
 ## 解决
+
+需要java那边把读写的方法修改为支持U+10000到U+10FFFF的码位
+
+写入修复
+```java
+  /**
+   * Prints a string to the stream, encoded as UTF-8
+   *
+   * @param v the string to print.
+   */
+  public void printString(String v, int strOffset, int length)
+    throws IOException
+  {
+    int offset = _offset;
+    byte []buffer = _buffer;
+
+    for (int i = 0; i < length; i++) {
+      if (SIZE <= offset + 16) {
+        _offset = offset;
+        flushBuffer();
+        offset = _offset;
+      }
+
+      char ch = v.charAt(i + strOffset);
+
+      if (ch < 0x80)
+        buffer[offset++] = (byte) (ch);
+      else if (ch < 0x800) {
+        buffer[offset++] = (byte) (0xc0 + ((ch >> 6) & 0x1f));
+        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+      }
+      else
+
+      // three Bytes, D800-DFFF do not allow the existence characters
+      if (ch < 0xD800 || (ch >= 0xE000 && ch <= 0xFFFF)) {
+        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
+        buffer[offset++] = (byte) (0x80 + ((ch >> 6) & 0x3f));
+        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+      }
+      else
+
+      // 010000 - 10FFFF characters, need four bytes
+      if (ch >= 0x10000 && ch <= 0x10FFFF) {
+        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
+        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
+        buffer[offset++] = (byte) (0x80 + ((ch >> 6) & 0x3f));
+        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+      }
+      else {
+        // throw
+      }
+    }
+
+    _offset = offset;
+  }
+```
+
+读取修复，有点蛋疼，除了`parseUTF8Char`方法修复，调用此方法的也需要跟踪修复，在此只做了对`parseUTF8Char`方法的修复。
+
+```java
+  /**
+   * Parses a single UTF8 character.
+   */
+  private int parseUTF8Char()
+    throws IOException
+  {
+    int ch = _offset < _length ? (_buffer[_offset++] & 0xff) : read();
+
+    if (ch < 0x80)
+      return ch;
+    else if ((ch & 0xe0) == 0xc0) {
+      int ch1 = read();
+      int v = ((ch & 0x1f) << 6) + (ch1 & 0x3f);
+
+      return v;
+    }
+    else if ((ch & 0xf0) == 0xe0) {
+      int ch1 = read();
+      int ch2 = read();
+      int v = ((ch & 0x0f) << 12) + ((ch1 & 0x3f) << 6) + (ch2 & 0x3f);
+
+      return v;
+    }
+    // parse the size of 4 bytes utf-8 characters
+    else if ((ch & 0xf8) == 0xf0) {
+      int ch1 = read();
+      int ch2 = read();
+      int ch3 = read();
+      int v = ((ch & 0x07) << 18) + ((ch1 & 0x3f) << 12) + ((ch2 & 0x3f) << 6) + (ch3 & 0x3f);
+
+      return v;
+    }
+    else
+      throw error("bad UTF-8 encoding at " + codeName(ch));
+  }
+```
+
 
 
 ## 说明
