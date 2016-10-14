@@ -163,7 +163,7 @@ Hessian是按UTF-8编码传输，在这个方法中应该是将UTF-8转为UTF-16
 由于写入的函数只是将每一个字符单独转成UTF-8字符，可能由两个char表示一个字符的，也这样分别被转成两个
 UTF-8字符。读取部分，也是这么分别读，最后获取到的char没有问题，弄拙成巧，Java-Java部分就正常传输了。
 
-## 解决
+## 解决(未完成方案)
 
 需要java那边把读写的方法修改为支持U+10000到U+10FFFF的码位
 
@@ -198,19 +198,28 @@ UTF-8字符。读取部分，也是这么分别读，最后获取到的char没�
       else
 
       // three Bytes, D800-DFFF do not allow the existence characters
-      if (ch < 0xD800 || (ch >= 0xE000 && ch <= 0xFFFF)) {
+      if (ch < 0xD800 || ch >= 0xE000)) {
         buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
         buffer[offset++] = (byte) (0x80 + ((ch >> 6) & 0x3f));
         buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
       }
       else
+      {
+        // 0xD800 - 0xE000 Unicode characters, Supplementary Planes, need four bytes
 
-      // 010000 - 10FFFF characters, need four bytes
-      if (ch >= 0x10000 && ch <= 0x10FFFF) {
-        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
-        buffer[offset++] = (byte) (0xe0 + ((ch >> 12) & 0xf));
-        buffer[offset++] = (byte) (0x80 + ((ch >> 6) & 0x3f));
-        buffer[offset++] = (byte) (0x80 + (ch & 0x3f));
+        // take the next char
+        i++;
+        char ch1 = v.charAt(i + strOffset);
+
+        // get unicode code point from two chars
+        // int code = ((ch - 0xD800) << 10) + ch1 - 0xDC00 + 0x10000;
+        int code = ((ch - 0xD800) << 10) + ch1 + 0x2400;
+
+        // unicode code to utf-8
+        buffer[offset++] = (byte) (0xf0 + ((code >> 18) & 0x7));
+        buffer[offset++] = (byte) (0x80 + ((code >> 12) & 0x3f));
+        buffer[offset++] = (byte) (0x80 + ((code >> 6) & 0x3f));
+        buffer[offset++] = (byte) (0x80 + (code & 0x3f));
       }
       else {
         // throw
@@ -221,7 +230,7 @@ UTF-8字符。读取部分，也是这么分别读，最后获取到的char没�
   }
 ```
 
-读取修复，有点蛋疼，除了`parseUTF8Char`方法修复，调用此方法的也需要跟踪修复，在此只做了对`parseUTF8Char`方法的修复。
+读取修复，有点蛋疼，在这不能修复，除了`parseUTF8Char`方法修复，调用此方法的也需要跟踪修复，在此只做了对`parseUTF8Char`方法的修复。
 
 ```java
   /**
@@ -252,7 +261,7 @@ UTF-8字符。读取部分，也是这么分别读，最后获取到的char没�
       int ch1 = read();
       int ch2 = read();
       int ch3 = read();
-      int v = ((ch & 0x07) << 18) + ((ch1 & 0x3f) << 12) + ((ch2 & 0x3f) << 6) + (ch3 & 0x3f);
+      int v = ((ch & 0x7) << 18) + ((ch1 & 0x3f) << 12) + ((ch2 & 0x3f) << 6) + (ch3 & 0x3f);
 
       return v;
     }
@@ -275,7 +284,7 @@ UTF-8字符。读取部分，也是这么分别读，最后获取到的char没�
 
 [使用 Java 语言进行 Unicode 代理编程](https://www.ibm.com/developerworks/cn/java/j-unicode/)
 
-[Unicode、UTF-16、UTF-8相互转换](https://cytle.github.io/2016/10/12/unicode%E3%80%81UTF-16%E3%80%81UTF-8%E7%9B%B8%E4%BA%92%E8%BD%AC%E6%8D%A2/)
+[Unicode、UTF-16、UTF-8相互转换](https://cytle.github.io/2016/10/12/Unicode、UTF-16、UTF-8相互转换/)
 
 [Emoji Unicode Tables](http://apps.timwhitlock.info/emoji/tables/unicode)
 
