@@ -11,7 +11,7 @@ group接受这几个属性，namespace、prefix、where、as。同时group可以
 
 ```php
 <?php
-    Route::group(['prefix' => 'users', 'namespace' => 'User'], function($router)
+    Route::group(['prefix' => 'users', 'namespace' => 'User'], function()
     {
         Route::post('', [
             'as' => '新增用户',
