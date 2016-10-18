@@ -271,6 +271,121 @@ UTF-8字符。读取部分，也是这么分别读，最后获取到的char没�
 ```
 
 
+## 最后的办法
+
+java端不进行修改，php端修复根据问题规则修改解析。
+
+```php
+<?php
+
+  /**
+   * 从Java端返回错误的字符，进行解析
+   *
+   * @author 炒饭
+   * 2016年10月14日17:18:54
+   */
+  function readUTF8FromBadStr($bytes)
+  {
+    if (count($bytes) !== 6) {
+      return '?';
+    }
+
+    try {
+      $bytes = array_map(function ($v) {
+        return ord($v);
+      }, $bytes);
+
+      // 获取第一个utf-8码
+      $v0 = (($bytes[0] & 0xf) << 12) + (($bytes[1] & 0x3f) << 6) + ($bytes[2] & 0x3f);
+
+      // 获取第二个utf-8码
+      $v1 = (($bytes[3] & 0xf) << 12) + (($bytes[4] & 0x3f) << 6) + ($bytes[5] & 0x3f);
+
+      // 合并为一个utf-16
+      $code = ($v0 << 16) + $v1;
+
+      // to hex
+      $code = base_convert($code, 10, 16);
+
+      $code = mb_convert_encoding(pack('H*', $code), 'UTF-8', 'UTF-16BE');
+
+      return $code;
+
+    } catch (Exception $e) {
+      return '?';
+    }
+  }
+
+
+  /**
+   * 修复支持在错误java端下获取辅助平面字符，原本方法修改名称为readUTF8BytesQuick
+   *
+   * @author 炒饭
+   * 2016年10月14日17:18:54
+   */
+  function readUTF8Bytes($len){
+    $string = '';
+
+    for($i = 0; $i < $len; $i++){
+      $ch = $this->read(1);
+      $charCode = ord($ch);
+
+      if ($charCode < 0x80) {
+        $string .= $ch;
+      } else if (($charCode & 0xe0) == 0xc0) {
+        $string .= $ch.$this->read(1);
+      } else if (($charCode & 0xf0) == 0xe0) {
+        /*
+         * 以毒攻毒
+         * 0xD800..0xDBFF
+         * 解出的字符，在[0xD8, 0xDC)区间内，即为U+10000到U+10FFFF码位的字符
+         */
+
+        // 第二个字节
+        $ch1 = $this->read();
+
+        // 判断第一个4位是否为0xed(11101101)
+        if ($charCode == 0xed) {
+          $charCode1 = ord($ch1);
+
+          // 判断第二个4位是否为在[0x8, 0xC)区间内
+          $secondFourBit = ($charCode1 & 0x3c) >> 2;
+          if ($secondFourBit >= 0x8 && $secondFourBit < 0xC) {
+            $bytes = [
+              $ch,
+              $ch1,
+              $this->read(1),
+              $this->read(1),
+              $this->read(1),
+              $this->read(1),
+            ];
+            $string .= $this->readUTF8FromBadStr($bytes);
+
+            // 字符串位置后移一位
+            $i++;
+            continue;
+          }
+        }
+
+        $string .= $ch . $ch1 . $this->read();
+
+      } else if (($charCode & 0xf8) == 0xf0) {
+        // 4字节字符识别
+        $string .= $ch . $this->read(3);
+      } else {
+        throw new HessianParsingException("Bad utf-8 encoding at pos ".$this->stream->pos);
+      }
+    }
+
+    if(HessianUtils::isInternalUTF8())
+      return $string;
+
+    return utf8_decode($string);
+  }
+?>
+```
+
+
 
 ## 说明
 本文使用的`HessianPHP`版本为`v2.0.3`，源码来源于此
