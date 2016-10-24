@@ -332,44 +332,45 @@ java端不进行修改，php端修复根据问题规则修改解析。
 
       if ($charCode < 0x80) {
         $string .= $ch;
-      } else if (($charCode & 0xe0) == 0xc0) {
+      } else if (($charCode & 0xe0) === 0xc0) {
         $string .= $ch.$this->read(1);
-      } else if (($charCode & 0xf0) == 0xe0) {
+      } else if ($charCode === 0xed) {
         /*
          * 以毒攻毒
          * 0xD800..0xDBFF
          * 解出的字符，在[0xD8, 0xDC)区间内，即为U+10000到U+10FFFF码位的字符
          */
 
-        // 第二个字节
+        // 读取第二个字节
         $ch1 = $this->read();
 
-        // 判断第一个4位是否为0xed(11101101)
-        if ($charCode == 0xed) {
-          $charCode1 = ord($ch1);
+        $charCode1 = ord($ch1);
 
-          // 判断第二个4位是否为在[0x8, 0xC)区间内
-          $secondFourBit = ($charCode1 & 0x3c) >> 2;
-          if ($secondFourBit >= 0x8 && $secondFourBit < 0xC) {
-            $bytes = [
-              $ch,
-              $ch1,
-              $this->read(1),
-              $this->read(1),
-              $this->read(1),
-              $this->read(1),
-            ];
-            $string .= $this->readUTF8FromBadStr($bytes);
+        // 判断第二个4位是否为在[0x8, 0xC)区间内
+        $secondFourBit = ($charCode1 & 0x3c) >> 2;
+        if ($secondFourBit >= 0x8 && $secondFourBit < 0xC) {
+          // 字符串offset再后移一位
+          $i++;
 
-            // 字符串位置后移一位
-            $i++;
-            continue;
-          }
+          $bytes = [
+            $ch,
+            $ch1,
+            $this->read(1),
+            $this->read(1),
+            $this->read(1),
+            $this->read(1),
+          ];
+
+          // 读取问题字符
+          $string .= $this->readUTF8FromBadStr($bytes);
+        } else {
+          // 当做正常的3个字符串输出
+          $string .= $ch . $ch1 . $this->read();
         }
-
-        $string .= $ch . $ch1 . $this->read();
-
-      } else if (($charCode & 0xf8) == 0xf0) {
+      } else if (($charCode & 0xf0) === 0xe0) {
+        // 3字节字符识别
+        $string .= $ch . $this->read(2);
+      } else if (($charCode & 0xf8) === 0xf0) {
         // 4字节字符识别
         $string .= $ch . $this->read(3);
       } else {
