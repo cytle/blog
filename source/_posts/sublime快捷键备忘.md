@@ -176,6 +176,19 @@ tags: sublime
 
 `Esc`：退出光标多行选择，退出搜索框，命令框等。
 
+
+### 查找模式下
+
+`Alt+R`：正则模式
+`Alt+C`：严格大小写
+`Alt+W`：一个单词
+`F3`：查找下一个
+`Shift+F3`：查找上一个
+`Alt+Enter`：查找所有
+`Ctrl+Alt+Enter`：替换所有
+`Ctrl+Shift+H`：替换
+
+
 ## 显示类
 
 `Ctrl+Tab`：按文件浏览过的顺序，切换当前窗口的标签页。
