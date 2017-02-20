@@ -1,10 +1,27 @@
 ---
-title: 2difre-前端多工程协作环境配置(相对路径)
+title: 2difre-前端多工程协作环境配置
 date: 2017-02-18 14:50:29
-tags:
+tags:　nginx
 ---
 
+> **问题:**
+> 原来要打包到项目环境,得修改多个源文件(Gruntfile.js`,`http.js`,`config/dev.js`),常常引发冲突.
+> 实际上需要修改的是这三个配置:
+>　1. 跳转地址
+> 2. api基础地址
+> 3. 资源地址
+>
+> 另一个**蛋疼**的事是为了各项目协作,需要配置不需要修改的项目(还得经常合并master),部署到本地和项目环境.
+
+以下用相对路径来解决上述问题,特别是用`/api`来解决地址配置，操作步骤为以下两步
+
+1. 项目修改
+    * 修改`Gruntfile.js`,`http.js`,`config/dev.js`
+2. 配置`nginx`分为本地开发环境和项目测试环境
+
 ### 项目修改细节
+
+static-meal, static-shop, static-om, static-bill, static-markting在项目中都需要做以下修改(只涉及到dev环境打包)
 
 #### Gruntfile.js
 
@@ -103,7 +120,7 @@ server {
 
   # 注意设置自定义域名,需要在hostname加一条
   server_name x.me;
-  # 静态地址,请求打包后的静态文件
+  # 静态地址,请求打包后的静态文件 也可以proxy_pass到daily或其他环境
   location /meal/ {
     alias /home/xsp/src/js/2dfire/static-meal/;
   }
@@ -158,7 +175,7 @@ server {
     proxy_pass       http://api.l.whereask.com/from_meal_server/;
   }
 #  location /retail-weidian-api/ {
-#    proxy_pass       http://retailweixin.2dfire-dev.com/retail-weidian-api;
+#    proxy_pass       http://retailweixin.2dfire-dev.com/retail-weidian-api/;
 #  }
 }
 ```
@@ -174,19 +191,19 @@ server {
 
   # meal和bill是本次变更会修改的工程
   location /fromMeal/meal/ {
-    proxy_pass       http://10.1.4.186/nginx/meal/page;
+    proxy_pass       http://10.1.4.186/nginx/meal/;
   }
   location /fromMeal/bill/ {
-    proxy_pass       http://10.1.4.187/nginx/bill/page;
+    proxy_pass       http://10.1.4.187/nginx/bill/;
   }
 
   # 真实api地址
   location /fromMeal/api/ {
-    proxy_pass       http://api.l.where.com/server_from_meal;
+    proxy_pass       http://api.l.where.com/server_from_meal/;
   }
 
   # 真实零售api地址
   location /fromMeal/retail-weidian-api/ {
-    proxy_pass       http://retailweixin.2dfire-dev.com/retail-weidian-api;
+    proxy_pass       http://retailweixin.2dfire-dev.com/retail-weidian-api/;
   }
 ```
