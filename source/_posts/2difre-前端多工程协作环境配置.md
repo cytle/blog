@@ -1,19 +1,19 @@
 ---
 title: 2difre-前端多工程协作环境配置
 date: 2017-02-18 14:50:29
-tags:　nginx
+tags: nginx
 ---
 
 > **问题:**
-> 原来要打包到项目环境,得修改多个源文件(Gruntfile.js`,`http.js`,`config/dev.js`),常常引发冲突.
+> 原来要打包到项目环境,得修改多个源文件(`Gruntfile.js`,`http.js`,`config/dev.js`),常常引发冲突.
 > 实际上需要修改的是这三个配置:
->　1. 跳转地址
+> 1. 跳转地址
 > 2. api基础地址
 > 3. 资源地址
 >
 > 另一个**蛋疼**的事是为了各项目协作,需要配置不需要修改的项目(还得经常合并master),部署到本地和项目环境.
 
-以下用相对路径来解决上述问题,特别是用`/api`来解决地址配置，操作步骤为以下两步
+以下用**相对路径**(所有路径都使用相对路径,特别是引入`/api`来表示api地址)来解决上述问题,操作步骤为以下两步
 
 1. 项目修改
     * 修改`Gruntfile.js`,`http.js`,`config/dev.js`
@@ -112,7 +112,7 @@ module.exports = {
 
 ### 本地开发配置
 
-```
+```nginx
 server {
   listen 80;
   access_log /var/log/nginx/2dfire.access.log;
@@ -149,12 +149,12 @@ server {
 
 
   # 开发环境配置
-  # 开发环境默认反向代理到上面的静态地址
+  # 开发环境默认重写到上面的静态地址
   location /dev/ {
-    proxy_pass       /;
+    rewrite ^/[\w]*?/(.*)$ /$1;
   }
 
-  # meal和bill需要修改,反向代理到webpack-server的端口
+  # 假设meal和bill需要修改,需要实时打包,反向代理到webpack-server的端口
   location /dev/meal/ {
     proxy_pass       http://localhost:8088/;
   }
@@ -180,16 +180,25 @@ server {
 }
 ```
 
+### 项目环境配置(10.1.7.159)
 
-###　项目环境配置(10.1.7.159)
+**项目环境各分支作用说明**
 
-```
-  # 工程默认使用daily (需要daily环境已经在用相对路径的环境配置)
+|分支名称|作用
+|-|-
+|bus|大家都可以上的车,代码从master中检出,之后可能用daily来替代
+|daily|日常环境,也是master中来的
+|dev_193|可以支付的分支
+
+----
+
+```nginx
+  # 工程默认使用bus代码
   location /fromMeal/ {
-    proxy_pass       http://api.l.where.com/daily/;
+    rewrite ^/[\w]*?/(.*)$ /bus/$1;
   }
 
-  # meal和bill是本次变更会修改的工程
+  # 假设meal和bill是本次变更会修改的工程,添加以下两条
   location /fromMeal/meal/ {
     proxy_pass       http://10.1.4.186/nginx/meal/;
   }
@@ -199,7 +208,8 @@ server {
 
   # 真实api地址
   location /fromMeal/api/ {
-    proxy_pass       http://api.l.where.com/server_from_meal/;
+    # 重写到server_from_meal
+    rewrite ^/[\w]*?/api/(.*)$ /server_from_meal/$1;
   }
 
   # 真实零售api地址
@@ -207,3 +217,4 @@ server {
     proxy_pass       http://retailweixin.2dfire-dev.com/retail-weidian-api/;
   }
 ```
+
