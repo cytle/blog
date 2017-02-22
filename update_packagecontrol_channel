@@ -2,4 +2,3 @@
 cd source/uploads
 
 wget https://packagecontrol.io/channel_v3.json -O channel_v3.json
-hexo deploy
