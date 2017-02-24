@@ -152,6 +152,8 @@ server {
   # 开发环境默认重写到上面的静态地址
   location /dev/ {
     rewrite ^/[\w]*?/(.*)$ /$1;
+    # 或者跳到bus上
+    #proxy_pass http://api.l.whereask.com/bus/$1;
   }
 
   # 假设meal和bill需要修改,需要实时打包,反向代理到webpack-server的端口
