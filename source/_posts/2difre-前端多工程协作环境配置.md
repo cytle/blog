@@ -32,7 +32,12 @@ static-meal, static-shop, static-om, static-bill, static-markting在项目中都
     // ...
     dev: {
         replacements: [
-            /* 从这开始
+            /* 为了页面间传递url,需要修改../page为../../{当前工程}/page */
+            {
+                from: /(\.\.\/page)/g,
+                to: '../../meal/page'
+            },
+            /* 从这开始删除
             {
                 from: /(\.\.\/public)/g,
                 to: 'http://10.1.4.186/nginx/meal/public'
@@ -69,11 +74,11 @@ static-meal, static-shop, static-om, static-bill, static-markting在项目中都
                 from: /(\.\.\/\.\.\/shop)/g,
                 to: 'http://api.l.whereask.com/fromMeal/shop'
             },
-            从这结束 */
             {
                 from: 'grunt_env_dev',
                 to: 'grunt_env_dev'
             }
+            结束 */
         ]
     }
     // ...
@@ -115,11 +120,6 @@ module.exports = {
 ```nginx
 server {
   listen 80;
-  access_log /var/log/nginx/2dfire.access.log;
-  error_log /var/log/nginx/2dfire.error.log;
-
-  # 注意设置自定义域名,需要在hostname加一条
-  server_name x.me;
   # 静态地址,请求打包后的静态文件 也可以proxy_pass到daily或其他环境
   location /meal/ {
     alias /home/xsp/src/js/2dfire/static-meal/;
@@ -197,7 +197,9 @@ server {
 ```nginx
   # 工程默认使用bus代码
   location /fromMeal/ {
-    rewrite ^/[\w]*?/(.*)$ /bus/$1;
+    # 真实api地址 重写到server_from_meal
+    rewrite ^/[\w]*?/api/(.*)$ /server_from_meal/$1 last;
+    rewrite ^/[\w]*?/(.*)$ /bus/$1 last;
   }
 
   # 假设meal和bill是本次变更会修改的工程,添加以下两条
@@ -206,12 +208,6 @@ server {
   }
   location /fromMeal/bill/ {
     proxy_pass       http://10.1.4.187/nginx/bill/;
-  }
-
-  # 真实api地址
-  location /fromMeal/api/ {
-    # 重写到server_from_meal
-    rewrite ^/[\w]*?/api/(.*)$ /server_from_meal/$1;
   }
 
   # 真实零售api地址
