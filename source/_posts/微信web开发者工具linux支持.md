@@ -8,5 +8,7 @@ tags:
 
 凌晨三点终于搞定了linux下开发者工具的使用,已经完美使用,之后上完整安装教程和npm包.
 
+github:[cytle/wechat_web_devtools](https://github.com/cytle/wechat_web_devtools)
 
 ![截图](/uploads/wechatwebtools.png)
+
