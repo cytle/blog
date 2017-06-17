@@ -76,10 +76,6 @@ deploy:
 # NexT
 avatar: https://avatars1.githubusercontent.com/u/5120505?v=3&s=466
 
-# 多说热评文章 true 或者 false
-duoshuo_hotartical: true
-duoshuo_shortname: x-xsp
-
 search:
   path: search.xml
   field: post

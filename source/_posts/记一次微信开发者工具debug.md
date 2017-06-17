@@ -1,5 +1,5 @@
 ---
-title: 记一次debug
+title: 记一次微信开发者工具debug
 date: 2017-06-18 00:39:28
 tags: chrome nwjs 微信开发者工具
 ---
