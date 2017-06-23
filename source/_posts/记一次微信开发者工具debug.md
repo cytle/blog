@@ -138,6 +138,34 @@ if (n) {
   a.contentWindow.postMessage(o, "*")
 ```
 
+*6/23更新: 为了替换更方便使用如下方式替换*
+
+`t.target().networkManager.certificateDetailsPromise(n.certificateId)` 替换为 `Promise.resolve(n)`
+
+```js
+var a, r = function(e) {
+  var t = e.data;
+  a || (a = document.getElementsByTagName("iframe")[0]);
+  var n = t.securityDetails(),
+    o = { command: "securityDetails", url: t.url, statusCode: t.statusCode, remoteAddress: t._remoteAddress };
+  if (n) {
+    o.protocol = n.protocol, o.securityState = t.securityState();
+    new Date;
+    Promise.resolve(n).then(function(e) {
+        var t = e.issuer ? e.issuer.toLocaleLowerCase() : "";
+        t.indexOf("rapidssl") === -1
+        && t.indexOf("symantec") === -1
+        && t.indexOf("geotrust") === -1
+        && t.indexOf("thawte") === -1
+        && t.indexOf("trustasia") === -1
+        || (o.securityState = "secure");
+        a.contentWindow.postMessage(o, "*")
+    })
+  } else
+      a.contentWindow.postMessage(o, "*")
+};
+```
+
 运行成功
 
 
