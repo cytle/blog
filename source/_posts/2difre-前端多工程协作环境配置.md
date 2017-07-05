@@ -74,7 +74,7 @@ server {
     rewrite ^/(.*)$ /dev/meal/$1;
   }
 
-  # 开发地址部分，根据需要打开相应重写规则*
+  #开发地址部分，根据需要打开相应重写规则*
   location /dev/ {
     #1. `/daily/meal/` 经过 ``^~ /` 后为 `/dev/daily/meal/`
     #2. 经过 `/dev/` 变为 `/dev/meal/`
@@ -107,7 +107,24 @@ server {
 
 即实现根据`变更分支`自动使用对应变更静态资源
 
-如根据`location /dev/`部分将以下url重写
+如根据以下配置
+```nginx
+  #开发地址部分，根据需要打开相应重写规则*
+  location /dev/ {
+    #1. `/daily/meal/` 经过 ``^~ /` 后为 `/dev/daily/meal/`
+    #2. 经过 `/dev/` 变为 `/dev/meal/`
+    #3. 同样shop是不匹配的，则 `/daily/shop/`重写为 `/whereask/daily/shop/`,使用whererask资源
+
+    #rewrite ^/dev/[^/]*/(shop/.*)$ /dev/$1 last;
+    #rewrite ^/dev/[^/]*/(bill/.*)$ /dev/$1 last;
+    #rewrite ^/dev/[^/]*/(marketing/.*)$ /dev/$1 last;
+    rewrite ^/dev/[^/]*/(meal/.*)$ /dev/$1 last;
+    #rewrite ^/dev/[^/]*/(om/.*)$ /dev/$1 last;
+    rewrite ^/dev/(.*)$ /whereask/$1 last;
+  }
+```
+
+可以将以下url重写到`本地webpack服务`
 
 - `localhost:82/invoice/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
 - `localhost:82/fire-one/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
