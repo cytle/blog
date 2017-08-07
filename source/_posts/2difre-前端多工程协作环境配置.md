@@ -45,7 +45,7 @@ http://api.l.whereask.com /invoice  /api         /orders/v1/get_query_shop_tax
 
 ```nginx
 server {
-  listen 82;
+  listen 9981;
   #rewrite_log on;
   #access_log /var/log/nginx/2dfire.access.log;
   #error_log /var/log/nginx/2dfire.error.log notice;
@@ -68,13 +68,13 @@ server {
     alias /c/src/js/;
   }
 
-  # webpack热加载路径重写*
+  # A. webpack热加载路径重写*
   location /__webpack_hmr {
     # 设置需要热加载的工程
     rewrite ^/(.*)$ /dev/meal/$1;
   }
 
-  #开发地址部分，根据需要打开相应重写规则*
+  # B. 开发地址部分，根据需要打开相应重写规则*
   location /dev/ {
     #1. `/daily/meal/` 经过 ``^~ /` 后为 `/dev/daily/meal/`
     #2. 经过 `/dev/` 变为 `/dev/meal/`
@@ -126,32 +126,32 @@ server {
 
 可以将以下url重写到`本地webpack服务`
 
-- `localhost:82/invoice/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
-- `localhost:82/fire-one/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
-- `localhost:82/[任意变更分支]/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
+- `localhost:9981/invoice/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
+- `localhost:9981/fire-one/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
+- `localhost:9981/[任意变更分支]/meal`/page/checkout.html ==> `localhost:8088`/page/checkout.html
 
 将以下非`meal`工程url反向代理到`http://api.l.whereask.com/invoice/...`部分
 
-- `localhost:82`/invoice/om/page/om.html ==> `api.l.whereask.com`/invoice/om/page/om.html
+- `localhost:9981`/invoice/om/page/om.html ==> `api.l.whereask.com`/invoice/om/page/om.html
 
 #### 2. 将webpack热加载路径重写
 
-- `localhost:82`/__webpack_hmr ==> `localhost:8088`/__webpack_hmr
+- `localhost:9981`/__webpack_hmr ==> `localhost:8088`/__webpack_hmr
 
 #### 3. 将`api`url反向代理到`http://api.l.whereask.com/变更分支/api/...`部分
 
 即实现根据`变更分支`自动使用对应变更api资源
 
-- `localhost:82`/invoice/api/orders/v1/get_query_shop_tax ==> `api.l.whereask.com`/invoice/api/orders/v1/get_query_shop_tax
+- `localhost:9981`/invoice/api/orders/v1/get_query_shop_tax ==> `api.l.whereask.com`/invoice/api/orders/v1/get_query_shop_tax
 
 ### 项目环境配置(10.1.7.159)
 
 **项目环境各分支作用说明**
 
-|分支名称|作用
-|-|-
-|daily|日常环境,大家都可以上的车,代码从master中检出
-|dev_193|可以支付的分支
+| 分支名称 | 作用                                         |
+|:---------|:---------------------------------------------|
+| daily    | 日常环境,大家都可以上的车,代码从master中检出 |
+| dev_193  | 可以支付的分支                               |
 
 ----
 
