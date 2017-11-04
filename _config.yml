@@ -71,6 +71,7 @@ theme: next
 deploy:
   type: git
   repo: git@github.com:cytle/cytle.github.io.git
+  extend_dirs: blog
   branch: master
 
 # NexT
