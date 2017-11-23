@@ -1,7 +1,7 @@
 ---
 title: sublime-packagecontrol-channel_v3
 date: 2017-02-22 11:49:56
-tags:
+tags: [sublime]
 ---
 
 [官方地址](https://packagecontrol.io/channel_v3.json)

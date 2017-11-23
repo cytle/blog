@@ -1,7 +1,7 @@
 ---
 title: eslint
 date: 2017-02-14 14:12:54
-tags:
+tags: [前端, js, eslint]
 ---
 
 ```json

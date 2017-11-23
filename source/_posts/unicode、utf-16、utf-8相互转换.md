@@ -1,7 +1,7 @@
 ---
 title: Unicode、UTF-16、UTF-8相互转换
 date: 2016-10-12 17:32:33
-tags: Unicode UTF-8 UTF-16 字符
+tags: [Unicode, UTF-8, UTF-16, 字符]
 ---
 
 > 本文从wiki和其它博文中搬了一些定义

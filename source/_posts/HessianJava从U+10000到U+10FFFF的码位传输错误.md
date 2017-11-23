@@ -1,7 +1,7 @@
 ---
 title: HessianJava从U+10000到U+10FFFF的码位传输错误
 date: 2016-10-13 14:29:26
-tags: Hessian UTF-8-MB4 unicode UTF-16
+tags: [Hessian, UTF-8-MB4, unicode, UTF-16]
 ---
 
 > 这段时间使用Hessian传递数据，发现有很多大坑。年久失修的Hessian的PHP实现库在64位下传递数字错误连连。

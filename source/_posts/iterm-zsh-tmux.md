@@ -1,7 +1,7 @@
 ---
 title: iterm+zsh+tmux
 date: 2016-09-25 15:38:13
-tags: zsh tmux unix vim
+tags: [zsh, tmux, unix, vim]
 ---
 
 ![效果](/uploads/iterm-zsh-tmux/效果.png)

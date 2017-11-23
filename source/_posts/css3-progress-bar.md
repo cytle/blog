@@ -1,7 +1,7 @@
 ---
 title: css3 progress bar
 date: 2017-02-18 13:46:16
-tags:
+tags: [css, 前端]
 ---
 
 ### 实现的效果

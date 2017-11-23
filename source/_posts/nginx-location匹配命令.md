@@ -1,7 +1,7 @@
 ---
 title: nginx-location匹配命令
 date: 2016-10-11 14:02:09
-tags: nginx
+tags: [nginx]
 ---
 
 ## location匹配命令

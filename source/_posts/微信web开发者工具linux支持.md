@@ -1,7 +1,7 @@
 ---
 title: 微信web开发者工具linux支持
 date: 2017-03-20 10:40:20
-tags:
+tags: [微信开发者工具, nwjs]
 ---
 
 # 微信web开发者工具

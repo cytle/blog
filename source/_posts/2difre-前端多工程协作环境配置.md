@@ -1,7 +1,7 @@
 ---
 title: 2difre-前端多工程协作环境配置
 date: 2017-02-18 14:50:29
-tags: nginx
+tags: [nginx, 工作]
 ---
 
 > **问题:**

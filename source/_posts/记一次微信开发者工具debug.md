@@ -1,7 +1,7 @@
 ---
 title: 记一次微信开发者工具debug
 date: 2017-06-18 00:39:28
-tags: chrome nwjs 微信开发者工具
+tags: [chrome, nwjw, 微信开发者工具]
 ---
 
 在维护的项目[Linux微信web开发者工具](https://github.com/cytle/wechat_web_devtools)中，有多个issues报小程序请求返回不成功，并且终端报异常

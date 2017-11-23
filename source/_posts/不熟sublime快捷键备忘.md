@@ -1,7 +1,7 @@
 ---
 title: 不熟sublime快捷键备忘
 date: 2016-11-16 14:20:47
-tags: sublime
+tags: [sublime]
 ---
 
 查找模式下
