@@ -204,6 +204,81 @@ new Promise(function(resovle, reject) { reject('据因') });
 
 # 其它细节
 
+## 执行时间
+
+[【翻译】Promises/A+规范](http://www.ituring.com.cn/article/66566)中对此解释的很清楚：
+
+> **注1** 这里的平台代码指的是引擎、环境以及`promise`的实施代码。实践中要确保`onFulfilled`和`onRejected`方法异步执行，且应该在`then`方法被调用的那一轮事件循环之后的新执行栈中执行。这个事件队列可以采用“宏任务（macro-task）”机制或者“微任务（micro-task）”机制来实现。由于`promise`的实施代码本身就是平台代码（**译者注：** 即都是 JavaScript），故代码自身在处理在处理程序时可能已经包含一个任务调度队列。
+>
+> **译者注：** 这里提及了`macrotask`和`microtask`两个概念，这表示异步任务的两种分类。在挂起任务时，JS引擎会将所有任务按照类别分到这两个队列中，首先在`macrotask`的队列（这个队列也被叫做`task queue`）中取出第一个任务，执行完毕后取出`microtask`队列中的所有任务顺序执行；之后再取`macrotask`任务，周而复始，直至两个队列的任务都取完。
+>
+> 两个类别的具体分类如下：
+>
+> -   **macro-task:** script（整体代码）, `setTimeout`, `setInterval`, `setImmediate`, I/O, UI rendering
+> -   **micro-task:** `process.nextTick`, `Promises`（这里指浏览器实现的原生 Promise）, `Object.observe`, `MutationObserver`
+>
+> 详见[stackoverflow 解答](http://stackoverflow.com/questions/25915634/difference-between-microtask-and-macrotask-within-an-event-loop-context) 或 [这篇博客](http://wengeezhang.com/?p=11)
+>
+> --- [【翻译】Promises/A+规范 注1](http://www.ituring.com.cn/article/66566)
+
+
+**补充一句：在处理微任务`microtask`时，他们可以排队更多的微任务，这些微任务都将被逐个运行，直到微任务队列耗尽。然后在再取`macrotask`任务。**
+
+考虑以下代码：
+
+```js
+var p1 = new Promise(function(resovle) { // executor
+  console.log('resolved'); // 1. resolved
+  resovle([1, 2, 3]);
+});
+
+p1
+  .then(function(values) { // 第一个onFulfilled
+    console.log(values); // 3. [1, 2, 3]
+    return values.reduce(function(p, v) {
+      return p + v;
+    }, 0); // 求和
+  })
+  .then(function(sum) { // 第二个onFulfilled
+    console.log(sum); // 5. 6
+    throw new Error('据因');
+  })
+  .catch(function(reason) { // onRejected
+    console.log(reason); // 6. '据因'
+  });
+
+p1.then(function () { // 第三个onFulfilled
+  console.log('第三个onFulfilled'); // 4. '第三个onFulfilled'
+});
+
+console.log('同步执行'); // 2. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: 3}
+
+setTimeout(function() {
+  console.log('setTimeout'); // 7. setTimeout
+});
+```
+
+序号表示控制台打印的顺序，可以看出`executor`是同步执行的，在`console.log('同步执行')`执行后，
+第一个`onFulfilled`、第三个`onFulfilled`、第二个`onFulfilled`和`onRejected`陆续执行，最后才是`setTimeout`被执行。
+
+再考虑以下代码，下面的示例展示了`Promise.all`的异步(当传递的可迭代对象是空时，是同步的)：
+
+```js
+var p1 = Promise.resolve(3);
+var p2 = 1337;
+var p3 = Promise.all([p1, p2]);
+
+console.log(p3); // 1. Promise {[[PromiseStatus]]: "pending", [[PromiseValue]]: undefined}
+console.log(Promise.all([])); // 2. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: Array(0)}
+setTimeout(function() {
+  console.log(p3); // 3. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: 3}
+});
+```
+
+可以看出`p3`在即使`p1`和`p2`都是被**接受**的情况下还是**未决议**状态。
+当script（整体代码）执行完成后，引擎再会去处理`p3`的决议（`microtask`）。
+所有的`microtask`都处理完成后，再执行下一个`macrotask`（setTimeout）。
+
 ## resolve和reject只接受一个参数
 
 -   如果使用多个参数，第一个参数之后的所有参数都会被忽略
@@ -219,81 +294,6 @@ new Promise((resolve, reject) => {
 }, (res) => {
   console.log(res); // 不会执行
 });
-```
-
-## 异步链式流
-
-`then`返回一个promise，可以链式调用：
-
-```js
-function getLocation() {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      resolve({ latitude: 88, longitude: 30 });
-      // reject(new Error('获取失败'));
-    }, 1000)
-  });
-}
-
-function getNearShops(location) {
-  // 根据location查询附近的店
-  return new Promise(function() {
-    resolve([{ name: '五六面馆', id: 1, location }]);
-    // reject(new Error('获取失败'));
-  });
-}
-
-getLocation()
-  .then(getNearShops)
-  .then((nearShops) => {
-    console.log(nearShops);
-  })
-  .catch((err) => {
-    console.error(err); // log
-  });
-```
-
-## 更复杂的异步链式流
-
-使用`Promise`我们能更清晰、更自信把功能拆分，不用担心回调被过多调用
-
-```js
-function confirm(content) {
-  return new Promise(function(resolve, reject) {
-    model.confirm(content, ({ ok }) => {
-      if (ok) {
-        resolve();
-      } else {
-        reject(new Error('用户取消'));
-      }
-    })
-  })
-}
-
-var isAuthorizedLocation = false;
-function authorizeLocation() {
-  if (isAuthorizedLocation) {
-    return Promise.resolve();
-  }
-  return confirm('是否授权定位') // 请求用户授权
-    .then(() => {
-      return new Promise(function(resolve, reject) { // 授权
-        // 去授权
-        resolve();
-        reject(new Error('授权失败'));
-      });
-    });
-}
-
-authorizeLocation() // 1. 授权
-  .then(getLocation) // 2. 获取定位
-  .then(getNearShops) // 3. 请求附近的店
-  .then((nearShops) => {
-    console.log(nearShops);
-  })
-  .catch((err) => {
-    console.error(err); // log
-  });
 ```
 
 ## 被吞掉的异常
@@ -376,82 +376,82 @@ setTimeout(function() {
 });
 ```
 
-**注意**：如果`Promise.race`被传入空数组会被挂住，永远不会被决议，而`Promise.all`会立即完成。
+## 异步链式流
 
-## 执行时间
-
-[【翻译】Promises/A+规范](http://www.ituring.com.cn/article/66566)中对此解释的很清楚：
-
-> **注1** 这里的平台代码指的是引擎、环境以及`promise`的实施代码。实践中要确保`onFulfilled`和`onRejected`方法异步执行，且应该在`then`方法被调用的那一轮事件循环之后的新执行栈中执行。这个事件队列可以采用“宏任务（macro-task）”机制或者“微任务（micro-task）”机制来实现。由于`promise`的实施代码本身就是平台代码（**译者注：** 即都是 JavaScript），故代码自身在处理在处理程序时可能已经包含一个任务调度队列。
->
-> **译者注：** 这里提及了`macrotask`和`microtask`两个概念，这表示异步任务的两种分类。在挂起任务时，JS引擎会将所有任务按照类别分到这两个队列中，首先在`macrotask`的队列（这个队列也被叫做`task queue`）中取出第一个任务，执行完毕后取出`microtask`队列中的所有任务顺序执行；之后再取`macrotask`任务，周而复始，直至两个队列的任务都取完。
->
-> 两个类别的具体分类如下：
->
-> -   **macro-task:** script（整体代码）, `setTimeout`, `setInterval`, `setImmediate`, I/O, UI rendering
-> -   **micro-task:** `process.nextTick`, `Promises`（这里指浏览器实现的原生 Promise）, `Object.observe`, `MutationObserver`
->
-> 详见[stackoverflow 解答](http://stackoverflow.com/questions/25915634/difference-between-microtask-and-macrotask-within-an-event-loop-context) 或 [这篇博客](http://wengeezhang.com/?p=11)
->
-> --- [【翻译】Promises/A+规范 注1](http://www.ituring.com.cn/article/66566)
-
-
-补充一句：在处理微任务`microtask`时，他们可以排队更多的微任务，这些微任务都将被逐个运行，直到微任务队列耗尽。然后在再取`macrotask`任务。
-
-考虑以下代码：
+`then`返回一个promise，可以链式调用：
 
 ```js
-var p1 = new Promise(function(resovle) { // executor
-  console.log('resolved'); // 1. resolved
-  resovle([1, 2, 3]);
-});
-
-p1
-  .then(function(values) { // 第一个onFulfilled
-    console.log(values); // 3. [1, 2, 3]
-    return values.reduce(function(p, v) {
-      return p + v;
-    }, 0); // 求和
-  })
-  .then(function(sum) { // 第二个onFulfilled
-    console.log(sum); // 5. 6
-    throw new Error('据因');
-  })
-  .catch(function(reason) { // onRejected
-    console.log(reason); // 6. '据因'
+function getLocation() {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      resolve({ latitude: 88, longitude: 30 });
+      // reject(new Error('获取失败'));
+    }, 1000)
   });
+}
 
-p1.then(function () { // 第三个onFulfilled
-  console.log('第三个onFulfilled'); // 4. '第三个onFulfilled'
-});
+function getNearShops(location) {
+  // 根据location查询附近的店
+  return new Promise(function() {
+    resolve([{ name: '五六面馆', id: 1, location }]);
+    // reject(new Error('获取失败'));
+  });
+}
 
-console.log('同步执行'); // 2. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: 3}
-
-setTimeout(function() {
-  console.log('setTimeout'); // 7. setTimeout
-});
+getLocation()
+  .then(getNearShops)
+  .then((nearShops) => {
+    console.log(nearShops);
+  })
+  .catch((err) => {
+    console.error(err); // log
+  });
 ```
 
-序号表示控制台打印的顺序，可以看出`executor`是同步执行的，在`console.log('同步执行')`执行后，
-第一个`onFulfilled`、第三个`onFulfilled`、第二个`onFulfilled`和`onRejected`陆续执行，最后才是`setTimeout`被执行。
+## 更复杂的异步链式流
 
-再考虑以下代码，下面的示例展示了`Promise.all`的异步(当传递的可迭代对象是空时，是同步的)：
+使用`Promise`我们能更清晰、更自信把功能拆分，不用担心回调被过多调用
 
 ```js
-var p1 = Promise.resolve(3);
-var p2 = 1337;
-var p3 = Promise.all([p1, p2]);
+function confirm(content) {
+  return new Promise(function(resolve, reject) {
+    model.confirm(content, ({ ok }) => {
+      if (ok) {
+        resolve();
+      } else {
+        reject(new Error('用户取消'));
+      }
+    })
+  })
+}
 
-console.log(p3); // 1. Promise {[[PromiseStatus]]: "pending", [[PromiseValue]]: undefined}
-console.log(Promise.all([])); // 2. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: Array(0)}
-setTimeout(function() {
-  console.log(p3); // 3. Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: 3}
-});
+var isAuthorizedLocation = false;
+function authorizeLocation() {
+  if (isAuthorizedLocation) {
+    return Promise.resolve();
+  }
+  return confirm('是否授权定位') // 请求用户授权
+    .then(() => {
+      return new Promise(function(resolve, reject) { // 授权
+        // 去授权
+        resolve();
+        reject(new Error('授权失败'));
+      });
+    });
+}
+
+authorizeLocation() // 1. 授权
+  .then(getLocation) // 2. 获取定位
+  .then(getNearShops) // 3. 请求附近的店
+  .then((nearShops) => {
+    console.log(nearShops);
+  })
+  .catch((err) => {
+    console.error(err); // log
+  });
 ```
 
-可以看出`p3`在即使`p1`和`p2`都是被**接受**的情况下还是**未决议**状态。
-当script（整体代码）执行完成后，引擎再会去处理`p3`的决议（`microtask`）。
-所有的`microtask`都处理完成后，再执行下一个`macrotask`（setTimeout）。
+**注意**：如果`Promise.race`被传入空数组会被挂住，永远不会被决议，而`Promise.all`会立即完成。
 
 # 参考
 
