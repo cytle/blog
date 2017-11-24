@@ -1,5 +1,5 @@
 ---
-title: iterm+zsh+tmux
+title: iterm zsh tmux配置--yadr使用
 date: 2016-09-25 15:38:13
 tags: [zsh, tmux, unix, vim]
 ---
