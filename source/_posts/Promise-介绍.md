@@ -170,24 +170,32 @@ p1.catch(
 
 ## resolve
 
-构造参数`executor`的`resolve`和`Promise.resolve`接受一个参数（和then中的回调函数返回值处理流程一样）：
+构造参数`executor`的`resolve`接受一个参数（和then中的回调函数返回值处理流程一样）：
 
 -   传递的**不为**`promise`或`thenable`，则返回一个决议成功的promise，结果为传入的参数
--   传递的**为**`promise`或`thenable`，则返回此对象，无论是否已经决议
+-   传递的**为**`promise`或`thenable`，则结果和此对象相同
 
 ```js
-var p = Promise.resolve(123);
-console.log(Promise.resolve(p) === p);; // true
+var p = new Promise(function(resovle) { resovle('终值') });
+var p2 = new Promise(function(resovle) { resovle(p) }); // Promise {[[PromiseStatus]]: "resolved", [[PromiseValue]]: "终值"}
 ```
 
 ### Promise.resolve
 
-如上文所说，`Promise.resolve`提供一个简便的方法来得到**接受的**`promise`
+`Promise.resolve`提供一个简便的方法来得到**接受的**`promise`
 
 ```js
 Promise.resolve('终值');
-// 和上面等价
+// 和上面接近等价
 new Promise(function(resovle) { resovle('终值') });
+```
+
+不同的是，如果`Promise.resolve`的入参**为**`promise`或`thenable`，则直接返回入参。
+
+```js
+var a = new Promise(function(resovle) { resovle('终值') });
+Promise.resolve(a) === a // true
+new Promise(function(resovle) { resovle(a) }) === a // false
 ```
 
 ### Promise.reject
@@ -200,7 +208,7 @@ Promise.reject('终值');
 new Promise(function(resovle, reject) { reject('据因') });
 ```
 
-构造参数`executor`的`resolve`和`Promise.resolve`接受一个参数，无论改参数是何种状态的`promise`还是普通值，都将其作为`据因`
+构造参数`executor`的`reject`和`Promise.reject`接受一个参数，无论改参数是何种状态的`promise`还是普通值，都将其作为`据因`
 
 # 其它细节
 
