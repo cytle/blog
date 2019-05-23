@@ -1,21 +1,6 @@
-const promise1 = this.getDates({
-    entityId,
-    orderType,
-}).then((dates) => {
-    if (dates.data) {
-        return dates.data;
-    }
-    throw new Error(dates.message);
-});
-
-const promise2 = this.getDiscounts({
-    entityId,
-    orderType,
-}).then((dates) => {
-    if (dates.data) {
-        return dates.data;
-    }
-    throw new Error(dates.message);
-});
-
-return Promise.all([promise1, promise2]);
+return Promise.all([
+    this.getDates({ entityId, orderType })
+        .then(({ message, data }) => data || Promise.reject(new Error(message))),
+    this.getDiscounts({ entityId, orderType })
+        .then(({ message, data }) => data || Promise.reject(new Error(message))),
+]);
