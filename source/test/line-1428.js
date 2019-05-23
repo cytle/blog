@@ -1,24 +1,22 @@
-const promise1 = new Promise(async (resolve, reject) => {
+const promise1 = (async function(resolve, reject) {
     const dates = await this.getDates({
         entityId,
         orderType,
     });
     if (dates.data) {
-        resolve(dates.data);
-    } else {
-        reject(dates.message);
+        return dates.data;
     }
-});
-const promise2 = new Promise(async (resolve, reject) => {
+    throw new Error(dates.message);
+}());
+const promise2 = (async function(resolve, reject) {
     const dates = await this.getDiscounts({
         entityId,
         orderType,
     });
     if (dates.data) {
-        resolve(dates.data);
-    } else {
-        reject(dates.message);
+        return dates.data;
     }
-});
+    throw new Error(dates.message);
+}());
 
 return Promise.all([promise1, promise2]);
