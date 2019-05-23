@@ -1,22 +1,21 @@
-const promise1 = (async function(resolve, reject) {
-    const dates = await this.getDates({
-        entityId,
-        orderType,
-    });
+const promise1 = this.getDates({
+    entityId,
+    orderType,
+}).then((dates) => {
     if (dates.data) {
         return dates.data;
     }
     throw new Error(dates.message);
-}());
-const promise2 = (async function(resolve, reject) {
-    const dates = await this.getDiscounts({
-        entityId,
-        orderType,
-    });
+});
+
+const promise2 = this.getDiscounts({
+    entityId,
+    orderType,
+}).then((dates) => {
     if (dates.data) {
         return dates.data;
     }
     throw new Error(dates.message);
-}());
+});
 
 return Promise.all([promise1, promise2]);
