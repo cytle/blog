@@ -1,4 +1,3 @@
-``` js
 const getDateList = async (resolve, reject) => {
     const dates = await this.getDates({
         entityId,
@@ -29,4 +28,3 @@ const promise2 = new Promise(((resolve, reject) => {
 }));
 
 return Promise.all([promise1, promise2]);
-```
