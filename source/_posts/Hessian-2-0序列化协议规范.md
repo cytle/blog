@@ -8,6 +8,7 @@ tags: Hessian
 
 [word版下载](/uploads/hessian协议中文版.docx)
 
+[原文：hessian-2.0-spec](http://caucho.com/resin-3.1/doc/hessian-2.0-spec.xtp)
 
 ## 1.概述
 `Hessian`是一个轻量级的,自定义描述的二进制RPC协议。`Hessian`主要用作面向对象的消息通信。
