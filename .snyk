@@ -1,0 +1,38 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:extend:20180424':
+    - hexo-renderer-scss > node-sass > request > extend:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > node-gyp > request > extend:
+        patched: '2023-05-26T14:25:55.981Z'
+  'npm:hoek:20180212':
+    - hexo-renderer-scss > node-sass > node-gyp > request > hawk > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > node-gyp > request > hawk > boom > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > node-gyp > request > hawk > sntp > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > node-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > request > hawk > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > request > hawk > boom > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > request > hawk > sntp > hoek:
+        patched: '2023-05-26T14:25:55.981Z'
+  'npm:stringstream:20180511':
+    - hexo-renderer-scss > node-sass > request > stringstream:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-renderer-scss > node-sass > node-gyp > request > stringstream:
+        patched: '2023-05-26T14:25:55.981Z'
+  'npm:tunnel-agent:20170305':
+    - hexo-renderer-scss > node-sass > request > tunnel-agent:
+        patched: '2023-05-26T14:25:55.981Z'
+  'npm:uglify-js:20151024':
+    - hexo > swig > uglify-js:
+        patched: '2023-05-26T14:25:55.981Z'
+    - hexo-deployer-git > swig > uglify-js:
+        patched: '2023-05-26T14:25:55.981Z'
