@@ -1,0 +1,147 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:extend:20180424':
+    - hexo > cheerio > jsdom > request > extend:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:extend:20180424'
+        path: hexo > cheerio > jsdom > request > extend
+    - hexo-fs > chokidar > fsevents > node-pre-gyp > request > extend:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:extend:20180424'
+        path: hexo-fs > chokidar > fsevents > node-pre-gyp > request > extend
+    - hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp > request > extend:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:extend:20180424'
+        path: >-
+          hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          request > extend
+    - hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp > request > extend:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:extend:20180424'
+        path: >-
+          hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp >
+          request > extend
+    - hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > request > extend:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:extend:20180424'
+        path: >-
+          hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          request > extend
+  'npm:hoek:20180212':
+    - hexo > cheerio > jsdom > request > hawk > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo > cheerio > jsdom > request > hawk > hoek
+    - hexo > cheerio > jsdom > request > hawk > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo > cheerio > jsdom > request > hawk > boom > hoek
+    - hexo > cheerio > jsdom > request > hawk > sntp > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo > cheerio > jsdom > request > hawk > sntp > hoek
+    - hexo > cheerio > jsdom > request > hawk > cryptiles > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo > cheerio > jsdom > request > hawk > cryptiles > boom > hoek
+    - hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > hoek
+    - hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek
+    - hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek
+    - hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          hawk > hoek
+    - hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp >
+          hawk > hoek
+    - hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          hawk > boom > hoek
+    - hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp >
+          hawk > boom > hoek
+    - hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          hawk > sntp > hoek
+    - hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp >
+          hawk > sntp > hoek
+    - hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk
+          > hoek
+    - hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk
+          > boom > hoek
+    - hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:hoek:20180212'
+        path: >-
+          hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > hawk
+          > sntp > hoek
+  'npm:moment:20170905':
+    - hexo > hexo-cli > hexo-log > hexo-bunyan > moment:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:moment:20170905'
+        path: hexo > hexo-cli > hexo-log > hexo-bunyan > moment
+  'npm:stringstream:20180511':
+    - hexo > cheerio > jsdom > request > stringstream:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:stringstream:20180511'
+        path: hexo > cheerio > jsdom > request > stringstream
+    - hexo-fs > chokidar > fsevents > node-pre-gyp > request > stringstream:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:stringstream:20180511'
+        path: hexo-fs > chokidar > fsevents > node-pre-gyp > request > stringstream
+    - hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp > request > stringstream:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:stringstream:20180511'
+        path: >-
+          hexo-deployer-git > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          request > stringstream
+    - hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp > request > stringstream:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:stringstream:20180511'
+        path: >-
+          hexo-generator-feed > nunjucks > chokidar > fsevents > node-pre-gyp >
+          request > stringstream
+    - hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp > request > stringstream:
+        patched: '2023-09-01T14:00:05.192Z'
+        id: 'npm:stringstream:20180511'
+        path: >-
+          hexo > hexo-cli > hexo-fs > chokidar > fsevents > node-pre-gyp >
+          request > stringstream
