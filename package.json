@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
-    "version": "3.4.2"
+    "version": "5.4.2"
   },
   "dependencies": {
     "hexo": "^5.4.0",
@@ -17,8 +17,9 @@
     "hexo-generator-tag": "^0.2.0",
     "hexo-renderer-ejs": "^0.2.0",
     "hexo-renderer-marked": "^1.0.0",
-    "hexo-renderer-scss": "^1.1.0",
+    "hexo-renderer-sass": "^0.5.0",
     "hexo-renderer-stylus": "^2.1.0",
     "hexo-server": "^1.0.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
